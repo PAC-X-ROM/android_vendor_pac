@@ -3,6 +3,7 @@
 # changelog: tool to generate a log of commits changes
 # Copyright (C) 2015 crDroid Android
 # Copyright (C) 2016 The PAC-ROM Project
+# copyright (C) 2019 The PAC-X Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,46 +23,37 @@
 # Import Colors
 . $ANDROID_BUILD_TOP/vendor/pac/tools/colors
 
-# Changelog File
 export Changelog=Changelog.txt
 
-# Remove tmp if it exists
-if [ -f "$Changelog" ]; then
-    rm -f "$Changelog"
+if [ -f $Changelog ];
+then
+	rm -f $Changelog
 fi
 
-# Create tmp file
-touch "$Changelog"
+touch $Changelog
 
 # Print something to build output
-echo -e "${bldcya}Generating changelog...${txtrst}"
-echo -e "${rst}"
+echo ${bldppl}"Generating changelog..."${txtrst}
 
-# Initializing log
-export CommitDeets=""
+for i in $(seq 5);
+do
+export After_Date=`date --date="$i days ago" +%m-%d-%Y`
+k=$(expr $i - 1)
+	export Until_Date=`date --date="$k days ago" +%m-%d-%Y`
 
-for i in $(seq 7); do
-    export After_Date
-    After_Date="$(date --date="$i days ago" +%Y-%m-%d)"
+	# Line with after --- until was too long for a small ListView
+	echo '====================' >> $Changelog;
+	echo  "     "$Until_Date       >> $Changelog;
+	echo '===================='	>> $Changelog;
+	echo >> $Changelog;
 
-    k=$((i - 1))
-    export Until_Date
-    Until_Date="$(date --date="$k days ago" +%Y-%m-%d)"
-
-    # Line with after --- until was too long for a small ListView
-    CommitDeets+="\n\n|*|day $Until_Date"
-
-    # Cycle through every repo to find commits between 2 dates
-    CommitDeets+="$(repo forall -pc git log --pretty=format:"%H|%ct|%an|%s" \
-                   --decorate --after="$After_Date" --until="$Until_Date")"
+	# Cycle through every repo to find commits between 2 dates
+	repo forall -pc 'git log --oneline --after=$After_Date --until=$Until_Date' >> $Changelog
+	echo >> $Changelog;
 done
 
-# Send all change to tmp file
-printf "$CommitDeets\n\n" > "$Changelog"
+sed -i 's/project/   */g' $Changelog
 
-# Copy the tmp file to output device
-cp "$Changelog" "$OUT"/system/etc/
-cp "$Changelog" "$OUT"/
-
-# Remove tmp file
-rm "$Changelog"
+cp $Changelog $OUT/system/etc/
+cp $Changelog $OUT/
+rm $Changelog
