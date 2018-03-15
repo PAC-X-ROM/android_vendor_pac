@@ -106,6 +106,11 @@ PRODUCT_PACKAGES += \
     QStilesTearDrop
 
 
+# Fonts
+PRODUCT_PACKAGES += \
+    CustomFonts
+
+
 # Extra tools
 PRODUCT_PACKAGES += \
     e2fsck \
