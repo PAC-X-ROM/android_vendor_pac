@@ -114,6 +114,11 @@ PRODUCT_PACKAGES += \
     CustomFonts
 
 
+# Markup libs
+PRODUCT_COPY_FILES += \
+    vendor/pac/prebuilt/common/lib/libsketchology_native.so:system/lib/libsketchology_native.so \
+    vendor/pac/prebuilt/common/lib64/libsketchology_native.so:system/lib64/libsketchology_native.so
+
 # Extra tools
 PRODUCT_PACKAGES += \
     e2fsck \
