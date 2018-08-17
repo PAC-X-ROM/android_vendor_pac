@@ -1,74 +1,129 @@
-PRODUCT_BRAND ?= pacrom
+# Copyright (C) 2019 The Pac-X project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
+ include vendor/pac/config/pac_version.mk
 
-ifeq ($(PRODUCT_GMS_CLIENTID_BASE),)
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.com.google.clientidbase=android-google
-else
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.com.google.clientidbase=$(PRODUCT_GMS_CLIENTID_BASE)
-endif
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    keyguard.no_require_sim=true \
-    ro.url.legal=http://www.google.com/intl/%s/mobile/android/basic/phone-legal.html \
-    ro.url.legal.android_privacy=http://www.google.com/intl/%s/mobile/android/basic/privacy.html \
-    ro.com.android.wifi-watchlist=GoogleGuest \
-    ro.setupwizard.enterprise_mode=1 \
-    ro.com.android.dateformat=MM-dd-yyyy \
-    ro.com.android.dataroaming=false
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.build.selinux=1
-
-# Default notification/alarm sounds
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.config.notification_sound=Argon.ogg \
-    ro.config.alarm_alert=Helium.ogg
-
-ifneq ($(TARGET_BUILD_VARIANT),user)
-# Thank you, please drive thru!
-PRODUCT_PROPERTY_OVERRIDES += persist.sys.dun.override=0
-endif
-
-ifneq ($(TARGET_BUILD_VARIANT),eng)
-# Enable ADB authentication
-ADDITIONAL_DEFAULT_PROPERTIES += ro.adb.secure=1
-endif
+PRODUCT_BRAND ?= PAC
 
 # Backup Tool
 PRODUCT_COPY_FILES += \
     vendor/pac/prebuilt/common/bin/backuptool.sh:install/bin/backuptool.sh \
     vendor/pac/prebuilt/common/bin/backuptool.functions:install/bin/backuptool.functions \
-    vendor/pac/prebuilt/common/bin/50-backup-script.sh:system/addon.d/50-backup-script.sh \
-    vendor/pac/prebuilt/common/bin/blacklist:system/addon.d/blacklist
+    vendor/pac/prebuilt/common/bin/50-base.sh:system/addon.d/50-base.sh \
+    vendor/pac/prebuilt/common/bin/clean_cache.sh:system/bin/clean_cache.sh
+
+ifeq ($(AB_OTA_UPDATER),true)
+PRODUCT_COPY_FILES += \
+    vendor/pac/prebuilt/common/bin/backuptool_ab.sh:system/bin/backuptool_ab.sh \
+    vendor/pac/prebuilt/common/bin/backuptool_ab.functions:system/bin/backuptool_ab.functions \
+    vendor/pac/prebuilt/common/bin/backuptool_postinstall.sh:system/bin/backuptool_postinstall.sh
+endif
+
+# Bootanimation
+$(call inherit-product, vendor/pac/config/bootanimation.mk)
+
+DEVICE_PACKAGE_OVERLAYS += \
+    vendor/pac/overlay/common \
+    vendor/pac/overlay/dictionaries
+
+# Custom PAC packages
+ifeq ($(TARGET_USE_GCAM),true)
+PRODUCT_PACKAGES += \
+    Gcam
+endif
+
+ifeq ($(TARGET_USE_JELLY),true)
+PRODUCT_PACKAGES += \
+    Jelly
+endif
+
+PRODUCT_PACKAGES += \
+    Terminal \
+    LatinIME \
+    LiveWallpapers \
+    LiveWallpapersPicker \
+    Stk \
+    Turbo \
+    WallpaperPickerGoogle
+
+# Extra tools
+PRODUCT_PACKAGES += \
+    e2fsck \
+    mke2fs \
+    tune2fs \
+    mount.exfat \
+    fsck.exfat \
+    mkfs.exfat \
+    mkfs.f2fs \
+    fsck.f2fs \
+    fibmap.f2fs \
+    mkfs.ntfs \
+    fsck.ntfs \
+    mount.ntfs \
+    7z \
+    bash \
+    bzip2 \
+    curl \
+    lib7z \
+    powertop \
+    pigz \
+    tinymix \
+    unrar \
+    unzip \
+    vim \
+    rsync \
+    zip
+
+# Exchange support
+PRODUCT_PACKAGES += \
+    Exchange2
 
 # Backup Services whitelist
 PRODUCT_COPY_FILES += \
     vendor/pac/config/permissions/backup.xml:system/etc/sysconfig/backup.xml
 
-# Signature compatibility validation
-PRODUCT_COPY_FILES += \
-    vendor/pac/prebuilt/common/bin/otasigcheck.sh:install/bin/otasigcheck.sh
-
 # init.d support
 PRODUCT_COPY_FILES += \
-    vendor/pac/prebuilt/common/bin/sysinit:system/bin/sysinit
+    vendor/pac/prebuilt/common/etc/init.d/00banner:system/etc/init.d/00banner
 
-ifneq ($(TARGET_BUILD_VARIANT),user)
-# userinit support
+# LatinIME gesture typing
+ifeq ($(TARGET_ARCH),arm64)
 PRODUCT_COPY_FILES += \
-    vendor/pac/prebuilt/common/etc/init.d/90userinit:system/etc/init.d/90userinit
+    vendor/pac/prebuilt/common/lib64/libjni_latinime.so:system/lib64/libjni_latinime.so \
+    vendor/pac/prebuilt/common/lib64/libjni_latinimegoogle.so:system/lib64/libjni_latinimegoogle.so
+else
+PRODUCT_COPY_FILES += \
+    vendor/pac/prebuilt/common/lib/libjni_latinime.so:system/lib/libjni_latinime.so \
+    vendor/pac/prebuilt/common/lib/libjni_latinimegoogle.so:system/lib/libjni_latinimegoogle.so
 endif
 
-# CM-specific init file
+# PAC-specific init file
 PRODUCT_COPY_FILES += \
-    vendor/pac/prebuilt/common/etc/init.local.rc:root/init.cm.rc
+    vendor/pac/prebuilt/common/etc/init.local.rc:root/init.aosp.rc
+
+# Bring in camera effects
+PRODUCT_COPY_FILES +=  \
+    vendor/pac/prebuilt/common/media/LMspeed_508.emd:system/media/LMspeed_508.emd \
+    vendor/pac/prebuilt/common/media/PFFprec_600.emd:system/media/PFFprec_600.emd
 
 # Copy over added mimetype supported in libcore.net.MimeUtils
 PRODUCT_COPY_FILES += \
     vendor/pac/prebuilt/common/lib/content-types.properties:system/lib/content-types.properties
+
+# Fix Dialer
+PRODUCT_COPY_FILES +=  \
+    vendor/pac/prebuilt/common/etc/sysconfig/dialer_experience.xml:system/etc/sysconfig/dialer_experience.xml
 
 # Enable SIP+VoIP on all targets
 PRODUCT_COPY_FILES += \
@@ -78,146 +133,26 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     frameworks/base/data/keyboards/Vendor_045e_Product_028e.kl:system/usr/keylayout/Vendor_045e_Product_0719.kl
 
-# This is CM!
-PRODUCT_COPY_FILES += \
-    vendor/pac/config/permissions/com.cyanogenmod.android.xml:system/etc/permissions/com.cyanogenmod.android.xml
+# Media
+PRODUCT_GENERIC_PROPERTIES += \
+    media.recorder.show_manufacturer_and_model=true
 
-# Include PAC audio files
-include vendor/pac/config/pac_audio.mk
-
-# Theme engine
-include vendor/pac/config/themes_common.mk
-
-# CMSDK
-include vendor/pac/config/cmsdk_common.mk
-
-# Required CM packages
+# Needed by some RILs and for some gApps packages
 PRODUCT_PACKAGES += \
-    CMAudioService \
-    Development \
-    BluetoothExt \
-    Profiles \
-    ThemeManagerService \
-    WeatherManagerService
+    librsjni \
+    libprotobuf-cpp-full
 
-# Optional PAC packages
+# Charger images
 PRODUCT_PACKAGES += \
-    libemoji \
-    Terminal \
-    LiveWallpapersPicker
+    charger_res_images
 
-# Include librsjni explicitly to workaround GMS issue
-PRODUCT_PACKAGES += \
-    librsjni
+# Recommend using the non debug dexpreopter
+USE_DEX2OAT_DEBUG ?= false
 
-# Custom PAC packages
-PRODUCT_PACKAGES += \
-    Trebuchet \
-    AudioFX \
-    CMWallpapers \
-    CMFileManager \
-    Eleven \
-    LockClock \
-    CMUpdater \
-    CyanogenSetupWizard \
-    CMSettingsProvider \
-    ExactCalculator \
-    LiveLockScreenService \
-    WeatherProvider \
-    DataUsageProvider \
-    WallpaperPicker \
-    SoundRecorder \
-    Screencast
+# Include SDCLANG definitions if it is requested and available
+#ifeq ($(HOST_OS),linux)
+#    ifneq ($(wildcard vendor/qcom/sdclang-4.0/),)
+#        include vendor/aosp/sdclang/sdclang.mk
+#    endif
+#endif
 
-# Exchange support
-PRODUCT_PACKAGES += \
-    Exchange2
-
-# Extra tools in PAC
-PRODUCT_PACKAGES += \
-    libsepol \
-    mke2fs \
-    tune2fs \
-    nano \
-    htop \
-    mkfs.ntfs \
-    fsck.ntfs \
-    mount.ntfs \
-    gdbserver \
-    micro_bench \
-    oprofiled \
-    sqlite3 \
-    strace \
-    pigz \
-    7z \
-    lib7z \
-    bash \
-    bzip2 \
-    curl \
-    powertop \
-    unrar \
-    unzip \
-    vim \
-    wget \
-    zip
-
-# Custom off-mode charger
-ifneq ($(WITH_CM_CHARGER),false)
-PRODUCT_PACKAGES += \
-    charger_res_images \
-    cm_charger_res_images \
-    font_log.png \
-    libhealthd.cm
-endif
-
-# ExFAT support
-WITH_EXFAT ?= true
-ifeq ($(WITH_EXFAT),true)
-TARGET_USES_EXFAT := true
-PRODUCT_PACKAGES += \
-    mount.exfat \
-    fsck.exfat \
-    mkfs.exfat
-endif
-
-# Openssh
-PRODUCT_PACKAGES += \
-    scp \
-    sftp \
-    ssh \
-    sshd \
-    sshd_config \
-    ssh-keygen \
-    start-ssh
-
-# rsync
-PRODUCT_PACKAGES += \
-    rsync
-
-# Stagefright FFMPEG plugin
-PRODUCT_PACKAGES += \
-    libffmpeg_extractor \
-    libffmpeg_omx \
-    media_codecs_ffmpeg.xml
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    media.sf.omx-plugin=libffmpeg_omx.so \
-    media.sf.extractor-plugin=libffmpeg_extractor.so
-
-# These packages are excluded from user builds
-ifneq ($(TARGET_BUILD_VARIANT),user)
-PRODUCT_PACKAGES += \
-    procmem \
-    procrank \
-    su
-endif
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.sys.root_access=0
-
--include $(WORKSPACE)/build_env/image-auto-bits.mk
-
-$(call prepend-product-if-exists, vendor/extra/product.mk)
-
-# Call PAC Stuff
-$(call inherit-product, vendor/pac/config/pac_common.mk)
