@@ -119,6 +119,10 @@ PRODUCT_COPY_FILES += \
     vendor/pac/prebuilt/common/lib/libsketchology_native.so:system/lib/libsketchology_native.so \
     vendor/pac/prebuilt/common/lib64/libsketchology_native.so:system/lib64/libsketchology_native.so
 
+# Pixel sysconfig
+PRODUCT_COPY_FILES += \
+    vendor/pac/prebuilt/common/etc/sysconfig/pixel.xml:system/etc/sysconfig/pixel.xml
+
 # Extra tools
 PRODUCT_PACKAGES += \
     e2fsck \
@@ -172,7 +176,7 @@ endif
 
 # PAC-specific init file
 PRODUCT_COPY_FILES += \
-    vendor/pac/prebuilt/common/etc/init.local.rc:root/init.aosp.rc
+    vendor/pac/prebuilt/common/etc/init.local.rc:root/init.pac.rc
 
 # Bring in camera effects
 PRODUCT_COPY_FILES +=  \
