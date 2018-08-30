@@ -137,7 +137,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/pac/prebuilt/common/etc/sysconfig/pixel.xml:system/etc/sysconfig/pixel.xml
 
-# Turbo
+# Turbo-X
 PRODUCT_PACKAGES += \
     Turbo \
     turbo.xml \
