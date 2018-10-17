@@ -96,7 +96,14 @@ PRODUCT_PACKAGES += \
     SystemUIDarkTheme \
     SystemBlackTheme \
     SettingsBlackTheme \
-    SystemUIBlackTheme 
+    SystemUIBlackTheme
+
+# QS tile styles
+PRODUCT_PACKAGES += \
+    QStilesDefault \
+    QStilesCircleTrim \
+    QStilesSquircleTrim \
+    QStilesTwoToneCircle
 
 # Extra tools
 PRODUCT_PACKAGES += \
