@@ -31,7 +31,8 @@ PRODUCT_COPY_FILES += \
 endif
 
 # Bootanimation
-$(call inherit-product, vendor/pac/config/bootanimation.mk)
+PRODUCT_COPY_FILES += \
+    vendor/pac/prebuilt/common/media/bootanimation/centre-900-60fps.zip:system/media/bootanimation.zip
 
 DEVICE_PACKAGE_OVERLAYS += \
     vendor/pac/overlay/common \
@@ -55,7 +56,47 @@ PRODUCT_PACKAGES += \
     LiveWallpapersPicker \
     Stk \
     Turbo \
-    WallpaperPickerGoogle
+    WallpaperPickerGoogle \
+    MarkupGoogle \
+    WellbeingPrebuilt
+
+# Themes
+# Accents
+PRODUCT_PACKAGES += \
+    PixelTheme \
+    AmberAccent \
+    BlueAccent \
+    BlueGreyAccent \
+    BrownAccent \
+    CyanAccent \
+    CandyRedAccent \
+    DeepOrangeAccent \
+    DeepPurpleAccent \
+    ExtendedGreenAccent \
+    GreenAccent \
+    GreyAccent \
+    IndigoAccent \
+    JadeGreenAccent \
+    LightBlueAccent \
+    LightGreenAccent \
+    LimeAccent \
+    OrangeAccent \
+    PaleBlueAccent \
+    PaleRedAccent \
+    PinkAccent \
+    PurpleAccent \
+    RedAccent \
+    TealAccent \
+    YellowAccent
+
+# UI Variants
+PRODUCT_PACKAGES += \
+    SystemDarkTheme \
+    SettingsDarkTheme \
+    SystemUIDarkTheme \
+    SystemBlackTheme \
+    SettingsBlackTheme \
+    SystemUIBlackTheme 
 
 # Extra tools
 PRODUCT_PACKAGES += \
