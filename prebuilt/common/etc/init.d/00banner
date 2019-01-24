@@ -1,0 +1,7 @@
+#!/system/bin/sh
+#
+# Print startup info
+#
+L="log -p i -t pac"
+
+$L "Welcome to PAC-X `getprop ro.build.version.release` / Pac-X `getprop ro.combined.version`";
