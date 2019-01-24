@@ -1,4 +1,4 @@
-# Copyright (C) 2017 pacExtended
+# Copyright (C) 2019 The Pac-X Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
- include vendor/pac/config/version.mk
+ include vendor/pac/config/pac_version.mk
 
 PRODUCT_BRAND ?= PAC
 

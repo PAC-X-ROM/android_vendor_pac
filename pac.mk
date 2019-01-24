@@ -18,3 +18,6 @@ $(call inherit-product, vendor/pac/config/common.mk)
 $(call inherit-product, vendor/pac/config/telephony.mk)
 
 $(call inherit-product, vendor/pac/config/pac_props.mk)
+
+$(call inherit-product, vendor/pac/config/pac_audio.mk)
+
